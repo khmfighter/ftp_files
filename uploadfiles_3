@@ -1,0 +1,64 @@
+# /usr/bin/python
+# -*-coding:utf-8 -*-
+import os,sys,time
+from ftplib import FTP
+
+#上传文件
+def ftp_upload_files(arr_files,ip,user,password,remote_dir):
+    ftp = FTP(ip)  # 设置ftp服务器地址
+    ftp.login(user, password)  # 设置登录账户和密码
+    ftp.cwd(remote_dir)  # 选择操作目录
+    count=0
+    for arr_file in arr_files:
+        f = open(arr_file, 'rb')  # 打开文件
+        ftp.storbinary('STOR %s' % os.path.basename(arr_file), f)  # 上传文件
+        f.close()
+        count=count+1
+    logfile.write("上传文件成功，共计%d个文件。\n" % count)
+
+#删除文件
+def delete_files(arr_del_files):
+    for del_file in arr_del_files:
+        os.remove(del_file)
+        #print ("Delete File: " + del_file)
+        logfile.write("删除%s文件成功！\n" % del_file)
+
+if __name__ == '__main__':
+    #过滤的文件格式
+    Const_Image_Format = [".csv"]
+    #源数据地址
+    sourcePath = "/root/numpy/"
+    #目标ftp目录
+    remotePath = "/home/boco4a/"
+    #FTP配置
+    ip='172.17.64.19'
+    user='zhejiang'
+    password='XNftp@0128'
+
+    programePath = os.getcwd()
+    #日志文件，存放在程序运行目录下
+    logFile="uploadfile.log"
+
+    dirarr = []
+    logfile=open(logFile,'a')
+    logfile.write("------------START-------------\n")
+    #写入执行时间
+    timeArray = time.localtime(time.time())
+    otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+    logfile.write(otherStyleTime+"\n")
+    #获取需要上传的文件列表
+    for root, dirs, files in os.walk(sourcePath):
+        count=0
+        for file in files:
+            newDir = os.path.join(root, file)
+            if (os.path.splitext(newDir)[1]) in Const_Image_Format:
+                dirarr.append(newDir)
+                count=count+1
+                logfile.write(newDir+'\n')
+        logfile.write("文件总数：%d \n" %count)
+    #print dirarr
+    #dirarr=['/root/numpy/data.csv', '/root/numpy/data1.csv']
+    ftp_upload_files(dirarr,ip,user,password,remotePath)
+    delete_files(dirarr)
+    logfile.write("------------END-------------\n")
+    logfile.close()
