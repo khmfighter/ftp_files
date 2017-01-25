@@ -1,0 +1,19 @@
+#!/usr/bin/sh
+SourcePath="/root/numpy"
+BakPath="/root/numpybak"
+RemotePath="/home/boco4a"
+echo $SourcePath
+mv "${SourcePath}"/*.csv $BakPath
+ftp -n <<!
+open 192.168.49.133
+user boco4a 1qaz@WSX
+passive
+binary
+cd $RemotePath
+lcd $BakPath
+prompt
+mput *.csv
+close
+bye
+!
+rm -rf "${BakPath}"/*.csv
