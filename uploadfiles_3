@@ -31,9 +31,9 @@ if __name__ == '__main__':
     #目标ftp目录
     remotePath = "/home/boco4a/"
     #FTP配置
-    ip='172.17.64.19'
-    user='zhejiang'
-    password='XNftp@0128'
+    ip='0.0.0.0'
+    user='user'
+    password='password'
 
     programePath = os.getcwd()
     #日志文件，存放在程序运行目录下
